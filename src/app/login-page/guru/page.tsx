@@ -25,7 +25,7 @@ export default function LoginMurid() {
         </div>
 
         <h1 className="text-xl font-bold text-center text-blue-700 mb-8">
-          Login Murid
+          Login Guru
         </h1>
 
         {/* Form */}
