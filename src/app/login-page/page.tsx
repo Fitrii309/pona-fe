@@ -19,13 +19,13 @@ export default function LoginPage() {
         <p className="text-white font-semibold mb-4">Login Sebagai</p>
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
           <Link
-            href="/Login/murid"
+            href="/login-page/murid"
             className="flex-1 bg-white border border-gray-300 rounded-full py-2 font-medium text-gray-800 shadow hover:bg-gray-100 transition text-center"
           >
             Murid
           </Link>
           <Link
-            href="/Login/guru"
+            href="/login-page/guru"
             className="flex-1 bg-white border border-gray-300 rounded-full py-2 font-medium text-gray-800 shadow hover:bg-gray-100 transition text-center"
           >
             Guru
