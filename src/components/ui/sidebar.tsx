@@ -4,8 +4,9 @@ import { useState } from "react";
 import { ChevronDown, ChevronRight, User, ClipboardList, LogOut, Medal, Star } from "lucide-react";
 import Image from "next/image";
 
-export default function Sidebar() {
-  const [openMenu, setOpenMenu] = useState(false);
+export default function SidebarMenu() {
+  const [openGuru, setOpenGuru] = useState(false);
+  const [openSiswa, setOpenSiswa] = useState(false);
 
   return (
     <div className="h-screen w-60 bg-white flex flex-col">
@@ -29,16 +30,16 @@ export default function Sidebar() {
         {/* Dropdown Menu */}
         <div>
           <button
-            onClick={() => setOpenMenu(!openMenu)}
+            onClick={() => setOpenGuru(!openGuru)}
             className="flex items-center justify-between w-full px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg">
             <span className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Data Poin Guru
             </span>
-            {openMenu ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            {openGuru ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
 
-          {openMenu && (
+          {openGuru && (
             <div className="ml-8 mt-1 space-y-1">
               <a href="/admin/guru" className="flex items-center gap-2 px-2 py-1 text-sm hover:text-black hover:bg-orange-200 rounded-lg w-full">
                 Detail Guru
@@ -49,16 +50,16 @@ export default function Sidebar() {
 
         <div>
           <button
-            onClick={() => setOpenMenu(!openMenu)}
+            onClick={() => setOpenSiswa(!openSiswa)}
             className="flex items-center justify-between px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
             <span className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Data Poin Murid
             </span>
-            {openMenu ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            {openSiswa ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
 
-          {openMenu && (
+          {openSiswa && (
             <div className="ml-8 mt-1 space-y-1">
               <a href="/admin/siswa" className="flex items-center gap-2 px-2 py-1 text-sm hover:text-black hover:bg-orange-200 rounded-lg w-full">
                 Detail Murid
