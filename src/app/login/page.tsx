@@ -1,17 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import React from "react";
+import react, {useState} from "react";
 import Image from "next/image";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const router = useRouter();
+  const route = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    // Tambahkan logika login di sini
-    console.log("Form submitted");
-  };
+    try {
+      const response = await axios.post('http://localhost:3001/auth/login', {
+        email,
+        password
+      });
+      const { token } = response.data;
+      localStorage.setItem('token', token);
+
+      route.push("/dashboard/page");
+      
+      alert('Login successful!');
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Login failed');
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
@@ -31,7 +48,7 @@ export default function Login() {
         </h1>
 
         {/* Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
@@ -39,6 +56,7 @@ export default function Login() {
             <input
               type="email"
               placeholder="Masukkan email..."
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -50,6 +68,7 @@ export default function Login() {
             <input
               type="password"
               placeholder="Masukkan Password..."
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
