@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Menu } from "lucide-react";
-import Sidebar from "@/components/ui/sidebar";
+import Sidebar from "@/components/ui/sidebarss";
 
 export default function AdminLayout({
   children,
@@ -27,11 +27,11 @@ export default function AdminLayout({
           <button onClick={() => setOpen(!open)}>
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="ml-4 font-bold">Admin Dashboard</h1>
+          <h1 className="ml-4 font-bold">Guru Dashboard</h1>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 pt-10 px-10 bg-gray-100">{children}</main>
+        <main className="flex-1 bg-gray-100">{children}</main>
       </div>
     </div>
   );
