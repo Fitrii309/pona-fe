@@ -30,7 +30,7 @@ export default function DataGuruPage() {
       <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
   
       {/* Judul */}
-      <h2 className="text-2xl font-medium text-gray-800">List Data Murid</h2>
+      <h2 className="text-2xl font-medium text-gray-800">List Data Siswa</h2>
     </div>
 
     {/* Table */}

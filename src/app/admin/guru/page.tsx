@@ -45,6 +45,11 @@ export default function DataGuruPage() {
   </TableHeader>
   <TableBody>
     <TableRow className="font-medium">
+      <TableCell>1</TableCell>
+      <TableCell>Jumiati Muchtar</TableCell>
+      <TableCell>zoemmy@gmail.com</TableCell>
+    </TableRow>
+    <TableRow className="font-medium">
       <TableCell>2</TableCell>
       <TableCell>Ari Wisnu</TableCell>
       <TableCell>arwis@gmail.com</TableCell>
