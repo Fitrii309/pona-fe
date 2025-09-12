@@ -1,12 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronRight, User, ClipboardList, LogOut, Medal, Star } from "lucide-react";
+import { ChevronDown, ChevronRight, User, LogOut, Medal, Star } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from 'next/navigation'
 
 export default function SidebarMenu() {
+  const router = useRouter();
   const [openGuru, setOpenGuru] = useState(false);
   const [openSiswa, setOpenSiswa] = useState(false);
+
+  const handleLogout = () => {
+    // Hapus token (atau session)
+    localStorage.removeItem("token");
+    // Arahkan ke halaman login
+    router.push("/login");
+  }
 
   return (
     <div className="h-screen w-60 bg-white flex flex-col">
@@ -80,11 +89,8 @@ export default function SidebarMenu() {
 
         {/* Settings */}
         <h3 className="text-xs font-bold text-yellow-500 mt-4">SETTING</h3>
-        <button className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
-          <User className="w-4 h-4" />
-          Profile
-        </button>
-        <button className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
+        <button onClick={handleLogout}
+         className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
           <LogOut className="w-4 h-4" />
           Logout
         </button>
