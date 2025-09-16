@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronRight, User, LogOut, Medal, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SidebarMenu() {
   const [openGuru, setOpenGuru] = useState(false);
@@ -14,11 +15,13 @@ export default function SidebarMenu() {
       {/* Header */}
       <div className="bg-green-700 text-white p-4 flex flex-col items-center">
       <div className="w-15 h-15 relative mb-3">
-        <Image
-            src="/assets/point pona.png"
-            alt="PONA"
-            fill
-        />
+        <Link href={"/admin"}>
+        <Image 
+        src="/assets/point pona.png"
+        alt="PONA"
+        fill>
+        </Image>
+        </Link>
       </div>
         <h1 className="text-sm font-bold">ADMIN</h1>
         <h2 className="text-lg font-semibold">DASHBOARD</h2>
