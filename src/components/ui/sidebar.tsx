@@ -69,14 +69,14 @@ export default function SidebarMenu() {
           )}
         </div>
 
-        <button className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
+        <a href="/admin/leaderboard" className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
           <Medal className="w-4 h-4" />
           Leaderboard
-        </button>
-        <button className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
+        </a>
+        <a href="/admin/kebaikan" className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
           <Star className="w-4 h-4" />
           Data Kebaikan
-        </button>
+        </a>
 
 
         {/* Settings */}
