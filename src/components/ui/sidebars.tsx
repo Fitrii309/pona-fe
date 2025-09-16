@@ -12,7 +12,7 @@ export default function SidebarMenu() {
       <div className="w-15 h-15 relative mb-3">
         <Image
             src="/assets/point pona.png"
-            alt="PONA"
+            alt=" PONA"
             fill
         />
       </div>
