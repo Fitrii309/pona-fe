@@ -7,7 +7,7 @@ export default function ProfilePage() {
     name: "Gemintang",
     nisn: "0081826624",
     kelas: " 12 Rekayasa Perangkat Lunak",
-    avatar: "/pp.jpeg", // Put the image inside /public
+    avatar: "/pp.jpeg",
   };
 
   return (

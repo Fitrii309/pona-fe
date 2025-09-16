@@ -1,6 +1,6 @@
 "use client";
 
-import { User, LogOut, Medal } from "lucide-react";
+import { User, LogOut, } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,15 +25,6 @@ export default function SidebarMenu() {
 
       {/* Menu */}
       <div className="flex-1  p-4 space-y-2 text-gray-400">
-        <h3 className="text-xs font-bold text-yellow-500">MAIN MENU</h3>
-        <Link
-          href="/murid/leaderboard/"
-          className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full"
-        >
-          <Medal className="w-4 h-4" />
-          Leaderboard
-        </Link>
-
         <h3 className="text-xs font-bold text-yellow-500 mt-6">SETTING</h3>
         <Link
           href="/murid/profiles/"
