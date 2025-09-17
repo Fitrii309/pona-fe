@@ -51,8 +51,11 @@ export default function TambahPoinPage() {
   const [value, setValue] = React.useState("")
 
     return (
-    <div className="flex-1 pt-2 px-4">
-        <h1 className="text-2xl font-bold mb-4">Tambah Poin Kebaikan</h1>
+    <div className="flex-1 ">
+      <div className="flex items-center pb-10">
+        <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
+        <h2 className="text-2xl font-medium text-gray-800">Tambah Poin Kebaikan</h2>
+      </div>
         <form className="space-y-4">
           <div className="flex flex-col space-y-3 m-3">
             <label className="mb-1 font-medium">Nama Siswa</label>

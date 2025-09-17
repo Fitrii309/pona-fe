@@ -1,82 +1,94 @@
 "use client";
 
-import Image from "next/image";
+import React from "react";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-type Student = {
-  id: number;
-  name: string;
-  points: number;
-  avatar: string;
-};
-
-export default function LeaderboardPage() {
-  const students: Student[] = [
-    { id: 1, name: "Ambayong Bayong", points: 5075, avatar: "/pp.jpeg" },
-    { id: 2, name: "Olivia Rodrigo", points: 4985, avatar: "/pp.jpeg" },
-    { id: 3, name: "Raff", points: 4642, avatar: "/pp.jpeg" },
-    { id: 4, name: "Bernadya", points: 3874, avatar: "/pp.jpeg" },
-    { id: 5, name: "Mihu Mihu", points: 3567, avatar: "/pp.jpeg" },
-    { id: 6, name: "Lorem Ipsum", points: 3478, avatar: "/pp.jpeg" },
-    { id: 7, name: "NIKI", points: 3387, avatar: "/pp.jpeg" },
-    { id: 8, name: "Juicy Luicy", points: 3257, avatar: "/pp.jpeg" },
-    { id: 9, name: "Nadin Amizah", points: 3250, avatar: "/pp.jpeg" },
-    { id: 10, name: "Iyang", points: 3212, avatar: "/pp.jpeg" },
+export default function DataKebaikanPage() {
+  const dataKebaikan = [
+    { id: 1, nama: "Azmi Tambayong", nisn: "09090909090", poin: 45 },
+    { id: 2, nama: "Nabieg When Y.H", nisn: "09090909091", poin: 70 },
+    { id: 3, nama: "Zaggi Ezi Duta", nisn: "09090909092", poin: 85 },
+    { id: 4, nama: "Dihya Ibnu B.D.G", nisn: "09090909093", poin: 60 },
+    { id: 5, nama: "Ridho Zhafiera", nisn: "09090909094", poin: 95 },
   ];
 
-  const sorted = [...students].sort((a, b) => b.points - a.points);
-
-  const getMedal = (rank: number) => {
-    if (rank === 1) return "🥇";
-    if (rank === 2) return "🥈";
-    if (rank === 3) return "🥉";
-    return rank;
-  };
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const filteredData = dataKebaikan.filter((murid) =>
+    murid.nama.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-4 md:p-6 w-full">
-      <h1 className="text-xl md:text-2xl font-bold text-blue-900 mb-4 md:mb-6">
-        Leaderboard
-      </h1>
-
-      <div className="overflow-x-auto">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden min-w-[320px]">
-          {/* Header row */}
-          <div className="flex justify-between px-2 md:px-6 py-2 md:py-3 text-gray-500 text-xs md:text-sm font-semibold border-b">
-            <span>Nama</span>
-            <span className="col-span-2 text-right">Poin</span>
-          </div>
-
-          {/* Rows */}
-          {sorted.map((student, index) => (
-            <div
-              key={student.id}
-              className="flex items-center justify-between px-2 md:px-6 py-2 md:py-3 border-b hover:bg-gray-50 transition text-sm md:text-base"
-            >
-              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <span className="text-base md:text-lg w-5 md:w-6 text-center shrink-0">
-                  {getMedal(index + 1)}
-                </span>
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden shrink-0">
-                  <Image
-                    src={student.avatar}
-                    alt={student.name}
-                    width={32}
-                    height={32}
-                    className="object-cover"
-                  />
-                </div>
-                <span className="font-medium truncate">{student.name}</span>
-              </div>
-
-              <div></div>
-
-              <div className="text-right font-semibold text-gray-700">
-                {student.points}
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="flex flex-col space-y-7">
+      {/* Search bar */}
+      <div className="relative rounded-md">
+        <Search className="absolute left-3 top-3 text-gray-500" />
+        <Input
+          placeholder="Search Nama Murid..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-12 py-3 text-base h-12 bg-gray-200"
+        />
       </div>
+
+      {/* Divider */}
+      <div className="border-b border-gray-300"></div>
+
+      {/* Judul */}
+      <div className="flex items-center mb-4">
+        <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
+        <h2 className="text-2xl font-medium text-gray-800">List Data Kebaikan</h2>
+      </div>
+
+      {/* Tabel */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[50px]">No.</TableHead>
+            <TableHead>Nama</TableHead>
+            <TableHead>NISN</TableHead>
+            <TableHead>Jumlah Poin Kebaikan</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+           {filteredData.length > 0 ? (
+            filteredData.map((murid, index) => (
+              <TableRow key={murid.id} className="font-medium">
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{murid.nama}</TableCell>
+                <TableCell>{murid.nisn}</TableCell>
+                <TableCell>
+                  <span
+                    className={`px-3 py-1 rounded-lg ${
+                      murid.poin >= 80
+                        ? "bg-green-200 text-green-700"
+                        : murid.poin >= 50
+                        ? "bg-yellow-200 text-yellow-700"
+                        : "bg-red-200 text-red-700"
+                    }`}
+                  >
+                    {murid.poin}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center text-gray-500 py-6">
+                Data tidak ditemukan
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 }
