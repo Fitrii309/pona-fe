@@ -12,9 +12,9 @@ export default function WelcomePage() {
   return (
     <div className="flex flex-col md:flex-row w-full">
       {/* Main Content */}
-      <main className="flex-1">
-        <h1 className="text-xl font-semibold mb-10">
-          Welcome, <span className="text-orange-500">[{user.name}]</span>
+      <main className="flex-1 p-6">
+        <h1 className="text-xl font-semibold mb-6">
+          Welcome, <span className="text-orange-500">{user.name}</span>
         </h1>
 
         <div className="flex flex-col items-center gap-4">
