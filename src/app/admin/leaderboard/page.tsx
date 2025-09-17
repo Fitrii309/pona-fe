@@ -37,10 +37,11 @@ export default function LeaderboardPage() {
       <div className="flex items-center mb-4">
         <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
         <h2 className="text-2xl font-medium text-gray-800">Leaderboard</h2>
+        <div className="border-b border-gray-300"></div>
       </div>
 
-      <div className="overflow-x-auto">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden min-w-[320px]">
+      <div className="flex justify-center p-4 mb-8">
+        <div className="bg-white rounded-xl shadow-sm w-full h-auto md:min-w-[500px] lg:min-w-[600px]">
           {/* Header row */}
           <div className="flex justify-between px-2 md:px-6 py-2 md:py-3 text-gray-500 text-xs md:text-sm font-semibold border-b">
             <span>Nama</span>

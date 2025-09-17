@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import Sidebar from "@/components/ui/sidebar";
+import { Toaster } from "sonner";
 
 export default function AdminLayout({
   children,
@@ -32,6 +33,7 @@ export default function AdminLayout({
 
         {/* Page content */}
         <main className="flex-1 pt-10 px-10 bg-gray-100">{children}</main>
+        <Toaster position="top-right" richColors />
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export default function Dashboard() {
     };
 
   return (
-    <div className="flex-1 pt-2 px-4">
+    <div className="flex-1 mb-10">
           <div className="flex flex-col md:flex-row w-full">
             {/* Main Content */}
             <main className="flex-1">

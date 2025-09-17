@@ -37,7 +37,7 @@ export default function Dashboard() {
             </main>
           </div>
       <h1 className="text-2xl font-bold mb-4 mt-10">Selamat datang di Admin Dashboard</h1>
-      <p className="text-gray-700">Gunakan sidebar untuk menavigasi through different sections.</p>
+      <p className="text-gray-700">Gunakan sidebar untuk menavigasi melalui bagian yang berbeda.</p>
     </div>
   );
 }
