@@ -14,7 +14,7 @@ export default function WelcomePage() {
       {/* Main Content */}
       <main className="flex-1 p-6">
         <h1 className="text-xl font-semibold mb-6">
-          Welcome, <span className="text-orange-500">[{user.name}]</span>
+          Welcome, <span className="text-orange-500">{user.name}</span>
         </h1>
 
         <div className="flex flex-col items-center gap-4">
