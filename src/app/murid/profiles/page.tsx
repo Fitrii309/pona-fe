@@ -12,11 +12,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 w-full flex justify-center">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-blue-900 mb-6 text-center">
-          Profile
-        </h1>
+    <div className="w-full">
+      <div className="flex items-center pb-10">
+        <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
+        <h2 className="text-2xl font-medium text-gray-800">Profile</h2>
+      </div>
 
         <div className="bg-white rounded-xl shadow-sm p-8">
           {/* Profile Image */}

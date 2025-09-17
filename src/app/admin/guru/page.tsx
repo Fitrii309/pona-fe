@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 import {
   Table,
   TableBody,
@@ -12,13 +14,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Guru = {
   id: number;
@@ -38,26 +53,28 @@ export default function DataGuruPage() {
 
   const [newNama, setNewNama] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [newNip, setNewNip] = useState("");
+  const [password, setPassword] = useState("");
 
-  // state untuk Edit
   const [editingGuru, setEditingGuru] = useState<Guru | null>(null);
   const [editNama, setEditNama] = useState("");
   const [editEmail, setEditEmail] = useState("");
 
-  // state untuk Search
   const [query, setQuery] = useState("");
 
-  // CREATE
-  const handleAddGuru = () => {
-    if (!newNama || !newEmail) return;
-    const newGuru = {
-      id: Date.now(), // id unik
+  // SAVE ADD
+  const handleSaveAdd = () => {
+    if (!newNama || !newEmail || !newNip || !password) return;
+    const newGuru: Guru = {
+      id: Date.now(),
       nama: newNama,
       email: newEmail,
     };
     setDataGuru([...dataGuru, newGuru]);
     setNewNama("");
     setNewEmail("");
+    setNewNip("");
+    setPassword("");
   };
 
   // DELETE
@@ -65,7 +82,7 @@ export default function DataGuruPage() {
     setDataGuru(dataGuru.filter((guru) => guru.id !== id));
   };
 
-  // OPEN EDIT MODAL
+  // OPEN EDIT
   const handleOpenEdit = (guru: Guru) => {
     setEditingGuru(guru);
     setEditNama(guru.nama);
@@ -82,10 +99,9 @@ export default function DataGuruPage() {
           : guru
       )
     );
-    setEditingGuru(null); // tutup modal
+    setEditingGuru(null);
   };
 
-  // FILTER data sesuai query
   const filteredGuru = dataGuru.filter(
     (guru) =>
       guru.nama.toLowerCase().includes(query.toLowerCase()) ||
@@ -114,20 +130,46 @@ export default function DataGuruPage() {
         <h2 className="text-2xl font-medium text-gray-800">List Data Guru</h2>
       </div>
 
-      {/* Form Tambah Guru */}
-      <div className="flex gap-2">
-        <Input
-          placeholder="Nama Guru"
-          value={newNama}
-          onChange={(e) => setNewNama(e.target.value)}
-        />
-        <Input
-          placeholder="Email Guru"
-          value={newEmail}
-          onChange={(e) => setNewEmail(e.target.value)}
-        />
-        <Button onClick={handleAddGuru}>Tambah</Button>
-      </div>
+      {/* Dialog Tambah */}
+      <Dialog>
+        <div className="flex justify-end">
+          <DialogTrigger asChild>
+            <Button className="w-[150px] gap-2 bg-blue-600 text-white hover:bg-blue-700">
+              Tambah Data Guru
+            </Button>
+          </DialogTrigger>
+        </div>
+
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Tambah Data Guru</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Input
+              placeholder="Nama Guru"
+              value={newNama}
+              onChange={(e) => setNewNama(e.target.value)}
+            />
+            <Input
+              placeholder="NIP Guru"
+              value={newNip}
+              onChange={(e) => setNewNip(e.target.value)}
+            />
+            <Input
+              placeholder="Email Guru"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+            <Input
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button onClick={handleSaveAdd}>Simpan</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Table */}
       <Table>
@@ -154,13 +196,35 @@ export default function DataGuruPage() {
                   >
                     Edit
                   </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(guru.id)}
-                  >
-                    Delete
-                  </Button>
+
+                  {/* AlertDialog untuk Delete */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm">
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Yakin ingin menghapus {guru.nama}?
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            handleDelete(guru.id);
+                            toast.success("Data Guru Berhasil Dihapus", {
+                              description: `Data guru ${guru.nama} telah dihapus`,
+                            });
+                          }}
+                        >
+                          Hapus
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))
@@ -174,7 +238,7 @@ export default function DataGuruPage() {
         </TableBody>
       </Table>
 
-      {/* Dialog untuk Edit */}
+      {/* Dialog Edit */}
       <Dialog open={!!editingGuru} onOpenChange={() => setEditingGuru(null)}>
         <DialogContent>
           <DialogHeader>
