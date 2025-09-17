@@ -12,7 +12,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 w-full flex justify-center">
+    <div className="w-full flex justify-center">
       <div className="w-full max-w-md">
         <h1 className="text-2xl font-bold text-blue-900 mb-6 text-center">
           Profile
