@@ -12,25 +12,25 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-blue-900 mb-6 text-center">
-          Profile
-        </h1>
+    <div>
+      <div className="flex items-center pb-10">
+        <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
+        <h2 className="text-2xl font-medium text-gray-800">Profile</h2>
+      </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          {/* Profile Image */}
-          <div className="flex justify-center mb-6">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
-              <Image
-                src={student.avatar}
-                alt={student.name}
-                width={112}
-                height={112}
-                className="object-cover"
-              />
-            </div>
+      <div className="bg-white rounded-xl shadow-sm p-8 max-w-md">
+        {/* Profile Image */}
+        <div className="flex justify-center mb-6">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
+            <Image
+              src={student.avatar}
+              alt={student.name}
+              width={112}
+              height={112}
+              className="object-cover"
+            />
           </div>
+        </div>
 
           {/* Name */}
           <div className="mb-4">
@@ -80,6 +80,5 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
