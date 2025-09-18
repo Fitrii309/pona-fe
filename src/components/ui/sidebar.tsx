@@ -78,7 +78,7 @@ export default function SidebarMenu() {
         </a>
         <a href="/admin/kebaikan" className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
           <Star className="w-4 h-4" />
-          Data Kebaikan
+          List Kategori Kebaikan
         </a>
 
 

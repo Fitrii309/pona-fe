@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
-  Dialog, 
+  Dialog,
   DialogTrigger,
   DialogContent,
   DialogHeader,
@@ -21,46 +21,50 @@ import {
 } from "@/components/ui/table";
 
 export default function DataKebaikanPage() {
-  // data awal kebaikan
-  const dataKebaikan = [
+  const [dataKebaikan, setDataKebaikan] = React.useState([
     { id: 1, nama: "Patuh Tata Tertib", poin: 10 },
     { id: 2, nama: "Rajin Piket", poin: 10 },
     { id: 3, nama: "Rajin Sholat", poin: 20 },
     { id: 4, nama: "Disiplin", poin: 15 },
     { id: 5, nama: "Rajin menolong teman", poin: 5 },
-  ];
-  
-  // state untuk tambah kebaikan
+  ]);
+
   const [newNama, setNewNama] = React.useState("");
   const [newPoin, setNewPoin] = React.useState("");
+
   const handleAddKebaikan = () => {
-    // Tambah data kebaikan baru
+    if (!newNama || !newPoin) {
+      toast.error("Semua field harus diisi");
+      return;
+    }
+
     const newKebaikan = {
       id: dataKebaikan.length + 1,
       nama: newNama,
       poin: parseInt(newPoin),
     };
-    dataKebaikan.push(newKebaikan);
+
+    setDataKebaikan([...dataKebaikan, newKebaikan]);
+    setNewNama("");
+    setNewPoin("");
     toast.success("Data kebaikan berhasil ditambahkan");
-    // Validasi input
-    if (!newNama || !newPoin) {
-      toast.error("Semua field harus diisi");
-      return;
-    }
+  };
 
   return (
     <div className="flex flex-col space-y-7">
       {/* Judul */}
       <div className="flex items-center mb-4">
         <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
-        <h2 className="text-2xl font-medium text-gray-800">List Kategori Kebaikan</h2>
+        <h2 className="text-2xl font-medium text-gray-800">
+          List Kategori Kebaikan
+        </h2>
       </div>
 
-            {/* Form Tambah */}
+      {/* Form Tambah */}
       <Dialog>
         <div className="flex justify-end">
           <DialogTrigger asChild>
-            <Button className="w-[150px] gap-2 bg-blue-600 text-white hover:bg-blue-700">
+            <Button className="w-[250px] h-10 gap-2 bg-blue-600 text-white hover:bg-blue-700">
               Tambah Data Kebaikan
             </Button>
           </DialogTrigger>
@@ -80,6 +84,7 @@ export default function DataKebaikanPage() {
               placeholder="Poin Kebaikan"
               value={newPoin}
               onChange={(e) => setNewPoin(e.target.value)}
+              type="number"
             />
             <Button onClick={handleAddKebaikan}>Simpan</Button>
           </div>
@@ -108,6 +113,7 @@ export default function DataKebaikanPage() {
                         ? "bg-green-200 text-green-700"
                         : murid.poin >= 50
                         ? "bg-yellow-200 text-yellow-700"
+                        : "bg-gray-200 text-gray-700"
                     }`}
                   >
                     {murid.poin}
@@ -117,7 +123,10 @@ export default function DataKebaikanPage() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="text-center text-gray-500 py-6">
+              <TableCell
+                colSpan={4}
+                className="text-center text-gray-500 py-6"
+              >
                 Data tidak ditemukan
               </TableCell>
             </TableRow>
@@ -126,4 +135,4 @@ export default function DataKebaikanPage() {
       </Table>
     </div>
   );
-}}
+}
