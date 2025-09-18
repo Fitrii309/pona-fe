@@ -1,8 +1,16 @@
 "use client";
 
 import React from "react";
-import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Dialog, 
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -13,40 +21,70 @@ import {
 } from "@/components/ui/table";
 
 export default function DataKebaikanPage() {
+  // data awal kebaikan
   const dataKebaikan = [
-    { id: 1, nama: "Azmi Tambayong", nisn: "09090909090", poin: 45 },
-    { id: 2, nama: "Nabieg When Y.H", nisn: "09090909091", poin: 70 },
-    { id: 3, nama: "Zaggi Ezi Duta", nisn: "09090909092", poin: 85 },
-    { id: 4, nama: "Dihya Ibnu B.D.G", nisn: "09090909093", poin: 60 },
-    { id: 5, nama: "Ridho Zhafiera", nisn: "09090909094", poin: 95 },
+    { id: 1, nama: "Patuh Tata Tertib", poin: 10 },
+    { id: 2, nama: "Rajin Piket", poin: 10 },
+    { id: 3, nama: "Rajin Sholat", poin: 20 },
+    { id: 4, nama: "Disiplin", poin: 15 },
+    { id: 5, nama: "Rajin menolong teman", poin: 5 },
   ];
-
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const filteredData = dataKebaikan.filter((murid) =>
-    murid.nama.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
+  // state untuk tambah kebaikan
+  const [newNama, setNewNama] = React.useState("");
+  const [newPoin, setNewPoin] = React.useState("");
+  const handleAddKebaikan = () => {
+    // Tambah data kebaikan baru
+    const newKebaikan = {
+      id: dataKebaikan.length + 1,
+      nama: newNama,
+      poin: parseInt(newPoin),
+    };
+    dataKebaikan.push(newKebaikan);
+    toast.success("Data kebaikan berhasil ditambahkan");
+    // Validasi input
+    if (!newNama || !newPoin) {
+      toast.error("Semua field harus diisi");
+      return;
+    }
 
   return (
     <div className="flex flex-col space-y-7">
-      {/* Search bar */}
-      <div className="relative rounded-md">
-        <Search className="absolute left-3 top-3 text-gray-500" />
-        <Input
-          placeholder="Search Nama Murid..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-12 py-3 text-base h-12 bg-gray-200"
-        />
-      </div>
-
-      {/* Divider */}
-      <div className="border-b border-gray-300"></div>
-
       {/* Judul */}
       <div className="flex items-center mb-4">
         <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
-        <h2 className="text-2xl font-medium text-gray-800">List Data Kebaikan</h2>
+        <h2 className="text-2xl font-medium text-gray-800">List Kategori Kebaikan</h2>
       </div>
+
+            {/* Form Tambah */}
+      <Dialog>
+        <div className="flex justify-end">
+          <DialogTrigger asChild>
+            <Button className="w-[150px] gap-2 bg-blue-600 text-white hover:bg-blue-700">
+              Tambah Data Kebaikan
+            </Button>
+          </DialogTrigger>
+        </div>
+
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Tambah Data</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Input
+              placeholder="Nama Kebaikan"
+              value={newNama}
+              onChange={(e) => setNewNama(e.target.value)}
+            />
+            <Input
+              placeholder="Poin Kebaikan"
+              value={newPoin}
+              onChange={(e) => setNewPoin(e.target.value)}
+            />
+            <Button onClick={handleAddKebaikan}>Simpan</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Tabel */}
       <Table>
@@ -54,17 +92,15 @@ export default function DataKebaikanPage() {
           <TableRow>
             <TableHead className="w-[50px]">No.</TableHead>
             <TableHead>Nama</TableHead>
-            <TableHead>NISN</TableHead>
-            <TableHead>Jumlah Poin Kebaikan</TableHead>
+            <TableHead>Poin Kebaikan</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-           {filteredData.length > 0 ? (
-            filteredData.map((murid, index) => (
+          {dataKebaikan.length > 0 ? (
+            dataKebaikan.map((murid, index) => (
               <TableRow key={murid.id} className="font-medium">
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{murid.nama}</TableCell>
-                <TableCell>{murid.nisn}</TableCell>
                 <TableCell>
                   <span
                     className={`px-3 py-1 rounded-lg ${
@@ -72,7 +108,6 @@ export default function DataKebaikanPage() {
                         ? "bg-green-200 text-green-700"
                         : murid.poin >= 50
                         ? "bg-yellow-200 text-yellow-700"
-                        : "bg-red-200 text-red-700"
                     }`}
                   >
                     {murid.poin}
@@ -91,4 +126,4 @@ export default function DataKebaikanPage() {
       </Table>
     </div>
   );
-}
+}}

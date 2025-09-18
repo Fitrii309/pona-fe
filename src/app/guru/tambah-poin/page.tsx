@@ -56,18 +56,18 @@ export default function TambahPoinPage() {
         <div className="w-2 h-9 bg-yellow-500 rounded mr-2"></div>
         <h2 className="text-2xl font-medium text-gray-800">Tambah Poin Kebaikan</h2>
       </div>
-        <form className="space-y-4">
+        <div className="bg-white rounded-xl w-[470px] shadow-sm p-5">
           <div className="flex flex-col space-y-3 m-3">
             <label className="mb-1 font-medium">Nama Siswa</label>
-            <Input type="text" placeholder="Nama Siswa" className="w-[400px] h-[50px] bg-white" /> 
+            <Input type="text" placeholder="Nama Siswa" className="w-[400px] h-[50px] bg-gray-100" /> 
             <div className="flex flex-row space-x-3 gap-4">
               <div>
                 <label className="mb-1 font-medium">Kelas</label>
-                <Input type="text" placeholder="Kelas" className="w-[100px] h-[50px] bg-white" />
+                <Input type="text" placeholder="Kelas" className="w-[100px] h-[50px] bg-gray-100" />
               </div>
               <div>
                 <label className="mb-1 font-medium">Jurusan</label>
-                <Input type="text" placeholder="Jurusan" className="w-[270px] h-[50px] bg-white" />
+                <Input type="text" placeholder="Jurusan" className="w-[270px] h-[50px] bg-gray-100" />
               </div>
             </div>
             
@@ -78,7 +78,7 @@ export default function TambahPoinPage() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[400px] h-[50px] justify-between"
+                className="w-[400px] h-[50px] justify-between bg-gray-100"
                 >
                   {value? frameworks.find((framework) => framework.value === value)?.label: "Select Kebaikan"}
                   <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -115,11 +115,11 @@ export default function TambahPoinPage() {
               <Input 
               id="picture" 
               type="file" 
-              className="w-[400px] bg-white mb-5"/>
+              className="w-[400px] bg-gray-100 mb-5"/>
 
             <Button variant="default" className="w-[400px]">Submit</Button>
           </div>
-        </form>
+        </div>
       </div>
     );
   }
