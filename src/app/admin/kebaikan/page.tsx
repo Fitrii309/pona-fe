@@ -22,30 +22,30 @@ import {
 
 export default function DataKebaikanPage() {
   const [dataKebaikan, setDataKebaikan] = React.useState([
-    { id: 1, nama: "Patuh Tata Tertib", poin: 10 },
-    { id: 2, nama: "Rajin Piket", poin: 10 },
-    { id: 3, nama: "Rajin Sholat", poin: 20 },
-    { id: 4, nama: "Disiplin", poin: 15 },
-    { id: 5, nama: "Rajin menolong teman", poin: 5 },
+    { id: 1, kategori: "Patuh Tata Tertib", poin: 20 },
+    { id: 2, kategori: "Rajin Piket", poin: 10 },
+    { id: 3, kategori: "Rajin Sholat", poin: 20 },
+    { id: 4, kategori: "Disiplin", poin: 15 },
+    { id: 5, kategori: "Rajin menolong teman", poin: 10 },
   ]);
 
-  const [newNama, setNewNama] = React.useState("");
+  const [newKategori, setNewKategori] = React.useState("");
   const [newPoin, setNewPoin] = React.useState("");
 
   const handleAddKebaikan = () => {
-    if (!newNama || !newPoin) {
+    if (!newKategori || !newPoin) {
       toast.error("Semua field harus diisi");
       return;
     }
 
     const newKebaikan = {
       id: dataKebaikan.length + 1,
-      nama: newNama,
+      kategori: newKategori,
       poin: parseInt(newPoin),
     };
 
     setDataKebaikan([...dataKebaikan, newKebaikan]);
-    setNewNama("");
+    setNewKategori("");
     setNewPoin("");
     toast.success("Data kebaikan berhasil ditambahkan");
   };
@@ -64,7 +64,7 @@ export default function DataKebaikanPage() {
       <Dialog>
         <div className="flex justify-end">
           <DialogTrigger asChild>
-            <Button className="w-[250px] h-10 gap-2 bg-blue-600 text-white hover:bg-blue-700">
+            <Button className="w-[180px] h-10 gap-2 bg-blue-600 text-white hover:bg-blue-700">
               Tambah Data Kebaikan
             </Button>
           </DialogTrigger>
@@ -77,8 +77,8 @@ export default function DataKebaikanPage() {
           <div className="flex flex-col gap-2">
             <Input
               placeholder="Nama Kebaikan"
-              value={newNama}
-              onChange={(e) => setNewNama(e.target.value)}
+              value={newKategori}
+              onChange={(e) => setNewKategori(e.target.value)}
             />
             <Input
               placeholder="Poin Kebaikan"
@@ -102,21 +102,15 @@ export default function DataKebaikanPage() {
         </TableHeader>
         <TableBody>
           {dataKebaikan.length > 0 ? (
-            dataKebaikan.map((murid, index) => (
-              <TableRow key={murid.id} className="font-medium">
+            dataKebaikan.map((kebaikan, index) => (
+              <TableRow key={kebaikan.id} className="font-medium">
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{murid.nama}</TableCell>
+                <TableCell>{kebaikan.kategori}</TableCell>
                 <TableCell>
                   <span
-                    className={`px-3 py-1 rounded-lg ${
-                      murid.poin >= 80
-                        ? "bg-green-200 text-green-700"
-                        : murid.poin >= 50
-                        ? "bg-yellow-200 text-yellow-700"
-                        : "bg-gray-200 text-gray-700"
-                    }`}
+                    className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold"
                   >
-                    {murid.poin}
+                    {kebaikan.poin}
                   </span>
                 </TableCell>
               </TableRow>
