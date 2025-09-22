@@ -1,6 +1,6 @@
 "use client";
 
-import { User, ClipboardList, LogOut } from "lucide-react";
+import { User, ClipboardList, LogOut, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -26,6 +26,10 @@ export default function SidebarMenu() {
       {/* Menu */}
       <div className="flex-1 p-4 space-y-2 text-gray-400">
         <h3 className="text-xs font-bold text-yellow-500">MAIN MENU</h3>
+        <a href="/guru/kebaikan" className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
+          <Star className="w-4 h-4" />
+          Kategori Kebaikan
+        </a>
         <a href="/guru/tambah-poin" className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full">
           <ClipboardList className="w-4 h-4" />
           Tambah Poin Kebaikan

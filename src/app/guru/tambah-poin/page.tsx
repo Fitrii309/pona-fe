@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,8 +18,37 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+
+
+const siswa = [
+  {
+    value: "Ridho Tambayong Saputra",
+    label: "Ridho Tambayong Saputra",
+  },
+  {
+    value: "Dihya Ibnu B. D. G",
+    label: "Dihya Ibnu B. D. G",
+  },
+  {
+    value: "Kania Majesty Swambayong",
+    label: "Kania Majesty Swambayong",
+  },
+  {
+    value: "ptrzz Tambayong",
+    label: "ptrzz Tambayong",
+  },
+  {
+    value: "Rdh Zhafiera",
+    label: "Rdh Zhafiera",
+  },
+    {
+    value: "naDihya Ibnu",
+    label: "naDihya Ibnu",
+  },
+]
  
-const frameworks = [
+
+const kebaikan = [
   {
     value: "Rajin Piket",
     label: "Rajin Piket",
@@ -43,12 +72,17 @@ const frameworks = [
     {
     value: "Rajin Mencuci Piring",
     label: "Rajin Mencuci Piring",
+  },{
+    value: "Yapping",
+    label: "Yapping",
   },
 ]
  
 export default function TambahPoinPage() {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+  const [openSiswa, setOpenSiswa] = React.useState(false)
+  const [valueSiswa, setValueSiswa] = React.useState("")
+  const [openKebaikan, setOpenKebaikan] = React.useState(false)
+  const [valueKebaikan, setValueKebaikan] = React.useState("")
 
     return (
     <div className="flex-1 ">
@@ -58,29 +92,55 @@ export default function TambahPoinPage() {
       </div>
         <div className="bg-white rounded-xl w-[470px] shadow-sm p-5">
           <div className="flex flex-col space-y-3 m-3">
-            <label className="mb-1 font-medium">Nama Siswa</label>
-            <Input type="text" placeholder="Nama Siswa" className="w-[400px] h-[50px] bg-gray-100" /> 
-            <div className="flex flex-row space-x-3 gap-4">
-              <div>
-                <label className="mb-1 font-medium">Kelas</label>
-                <Input type="text" placeholder="Kelas" className="w-[100px] h-[50px] bg-gray-100" />
-              </div>
-              <div>
-                <label className="mb-1 font-medium">Jurusan</label>
-                <Input type="text" placeholder="Jurusan" className="w-[270px] h-[50px] bg-gray-100" />
-              </div>
-            </div>
-            
-            <label className="mb-1 font-medium">Pilihan Kebaikan </label>
-            <Popover open={open} onOpenChange={setOpen}>
+            <label className="mb-1 font-medium">Pilih Nama Siswa</label>
+            <Popover open={openSiswa} onOpenChange={setOpenSiswa}>
               <PopoverTrigger asChild>
                 <Button
                 variant="outline"
                 role="combobox"
-                aria-expanded={open}
+                aria-expanded={openSiswa}
                 className="w-[400px] h-[50px] justify-between bg-gray-100"
                 >
-                  {value? frameworks.find((framework) => framework.value === value)?.label: "Select Kebaikan"}
+                  {valueSiswa? siswa.find((siswa) => siswa.value === valueSiswa)?.label: "Select Siswa"}
+                  <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+            <PopoverContent className="w-[400px] p-0">
+              <Command>
+                <CommandInput placeholder="Search Siswa..." />
+                <CommandList>
+                <CommandEmpty>Select Siswa</CommandEmpty>
+                <CommandGroup>
+                  {siswa.map((siswa) => (
+                <CommandItem
+                  key={siswa.value}
+                  value={siswa.value}
+                  onSelect={(currentValue) => {
+                  setValueSiswa(currentValue === valueSiswa ? "" : currentValue)
+                  setOpenSiswa(false)
+                  }}
+                >
+                <CheckIcon
+                  className={cn("mr-2 h-4 w-4", valueSiswa === siswa.value ? "opacity-100" : "opacity-0")}
+                />
+                {siswa.label}
+                </CommandItem>
+                ))}
+                </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+            </Popover>
+            <label className="mb-1 font-medium">Pilih Kategori Kebaikan </label>
+            <Popover open={openKebaikan} onOpenChange={setOpenKebaikan}>
+              <PopoverTrigger asChild>
+                <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openKebaikan}
+                className="w-[400px] h-[50px] justify-between bg-gray-100"
+                >
+                  {valueKebaikan? kebaikan.find((kebaikan) => kebaikan.value === valueKebaikan)?.label: "Select Kebaikan"}
                   <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -90,19 +150,19 @@ export default function TambahPoinPage() {
                 <CommandList>
                 <CommandEmpty>Select Kebaikan</CommandEmpty>
                 <CommandGroup>
-                  {frameworks.map((framework) => (
+                  {kebaikan.map((kebaikan) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={kebaikan.value}
+                  value={kebaikan.value}
                   onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue)
-                  setOpen(false)
+                  setValueKebaikan(currentValue === valueKebaikan ? "" : currentValue)
+                  setOpenKebaikan(false)
                   }}
                 >
                 <CheckIcon
-                  className={cn("mr-2 h-4 w-4", value === framework.value ? "opacity-100" : "opacity-0")}
+                  className={cn("mr-2 h-4 w-4", valueKebaikan === kebaikan.value ? "opacity-100" : "opacity-0")}
                 />
-                {framework.label}
+                {kebaikan.label}
                 </CommandItem>
                 ))}
                 </CommandGroup>
