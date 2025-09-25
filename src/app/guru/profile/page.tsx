@@ -1,12 +1,29 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function ProfilePage() {
-  const student = {
+  const [student, setStudent] = useState({
     name: "Zoemmy",
     nip: "1298273891728",
     avatar: "/pp.jpeg",
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStudent({
+      ...student,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSave = () => {
+    // di sini bisa dipanggil API ke backend untuk update data
+    console.log("Data disimpan:", student);
+    setIsEditing(false);
   };
 
   return (
@@ -35,21 +52,50 @@ export default function ProfilePage() {
           <label className="block text-gray-500 text-sm mb-1">Nama</label>
           <input
             type="text"
+            name="name"
             value={student.name}
-            readOnly
-            className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
+            onChange={handleChange}
+            readOnly={!isEditing}
+            className={`w-full px-3 py-2 rounded-md border font-semibold ${
+              isEditing ? "text-black border-blue-400" : "text-gray-800"
+            }`}
           />
         </div>
 
-        {/* NISN */}
+        {/* NIP */}
         <div className="mb-4">
           <label className="block text-gray-500 text-sm mb-1">NIP</label>
           <input
             type="text"
+            name="nip"
             value={student.nip}
-            readOnly
-            className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
+            onChange={handleChange}
+            readOnly={!isEditing}
+            className={`w-full px-3 py-2 rounded-md border font-semibold ${
+              isEditing ? "text-black border-blue-400" : "text-gray-800"
+            }`}
           />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-2">
+          {isEditing ? (
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => setIsEditing(false)}
+              >
+                Batal
+              </Button>
+              <Button 
+            className="bg-blue-600 text-white hover:bg-blue-700"
+              onClick={handleSave}>Simpan</Button>
+            </>
+          ) : (
+            <Button 
+            className="bg-blue-600 text-white hover:bg-blue-700"
+            onClick={() => setIsEditing(true)}>Edit</Button>
+          )}
         </div>
       </div>
     </div>

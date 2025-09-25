@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {  
+import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,  
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
@@ -32,8 +33,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-type murid = {
-  id: string;
+type Murid = {
+  id: number;
   nama: string;
   email?: string;
   nisn: string;
@@ -42,57 +43,82 @@ type murid = {
 };
 
 export default function DataMuridPage() {
-  // data awal siswa
-  const [dataMurid, setDataMurid] = useState<murid[]>([
-    { id: crypto.randomUUID(), nama: "Kania Majesty Swambayong", nisn: "23226967", kelas: "XII", jurusan: "RPL" },
-    { id: crypto.randomUUID(), nama: "Ridho Tambayong Saputra", nisn: "12345678", kelas: "XII", jurusan: "RPL" },
-    { id: crypto.randomUUID(), nama: "Fitri Ramadani Ambayong", nisn: "23226963", kelas: "XII", jurusan: "RPL" },
-    { id: crypto.randomUUID(), nama: "Dihya Ibnu Ambayong Ambayong", nisn: "87654321", kelas: "XII", jurusan: "RPL" },
-  ]);
-
-  // state untuk tambah siswa
+  const [dataMurid, setDataMurid] = useState<Murid[]>([]);
   const [newNama, setNewNama] = useState("");
   const [newNisn, setNewNisn] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [Password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [newKelas, setNewKelas] = useState("");
   const [newJurusan, setNewJurusan] = useState("");
 
-
-  // state untuk edit siswa
-  const [editingMurid, setEditingMurid] = useState<murid | null>(null);
+  const [editingMurid, setEditingMurid] = useState<Murid | null>(null);
   const [editNama, setEditNama] = useState("");
   const [editNisn, setEditNisn] = useState("");
   const [editKelas, setEditKelas] = useState("");
   const [editJurusan, setEditJurusan] = useState("");
 
-  // state untuk search
   const [query, setQuery] = useState("");
 
+  // FETCH DATA
+  async function fetchDataMurid() {
+    try {
+      const response = await axios.get("http://localhost:3001/siswa");
+      setDataMurid(response.data);
+    } catch (error) {
+      console.error("Error fetching data murid:", error);
+      toast.error("Gagal mengambil data murid");
+    }
+  }
+
+  useEffect(() => {
+    fetchDataMurid();
+  }, []);
+
   // CREATE
-    const handleAddMurid = () => {
-    if (!newNama || !newEmail || !Password || !newNisn || !newKelas || !newJurusan) return;
-    const newMurid: murid = {
-      id: crypto.randomUUID(),
-      nama: newNama,
-      email: newEmail,
-      nisn: newNisn,
-      kelas: newKelas,
-      jurusan: newJurusan,
-    };
-    setDataMurid([...dataMurid, newMurid]);
-    setNewNama("");
-    setNewEmail("");
-    setNewNisn("");
-    setPassword("");
-  };
-  // DELETE
-  const handleDelete = (id: string) => {
-    setDataMurid(dataMurid.filter((murid) => murid.id !== id));
+  const handleAddMurid = async () => {
+    if (!newNama || !newEmail || !password || !newNisn || !newKelas || !newJurusan) {
+      toast.error("Semua field harus diisi!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/murid", {
+        nama: newNama,
+        email: newEmail,
+        password,
+        nisn: newNisn,
+        kelas: newKelas,
+        jurusan: newJurusan,
+      });
+
+      setDataMurid([...dataMurid, response.data]);
+      setNewNama("");
+      setNewEmail("");
+      setPassword("");
+      setNewNisn("");
+      setNewKelas("");
+      setNewJurusan("");
+      toast.success("Data murid berhasil ditambahkan");
+    } catch (error) {
+      console.error("Error add murid:", error);
+      toast.error("Gagal menambah data murid");
+    }
   };
 
-  // OPEN EDIT MODAL
-  const handleOpenEdit = (murid: murid) => {
+  // DELETE
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:3001/api/murid/${id}`);
+      setDataMurid(dataMurid.filter((murid) => murid.id !== id));
+      toast.success("Data murid berhasil dihapus");
+    } catch (error) {
+      console.error("Error delete murid:", error);
+      toast.error("Gagal menghapus data murid");
+    }
+  };
+
+  // OPEN EDIT
+  const handleOpenEdit = (murid: Murid) => {
     setEditingMurid(murid);
     setEditNama(murid.nama);
     setEditNisn(murid.nisn);
@@ -101,16 +127,31 @@ export default function DataMuridPage() {
   };
 
   // SAVE EDIT
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingMurid) return;
-    setDataMurid(
-      dataMurid.map((murid) =>
-        murid.id === editingMurid.id
-          ? { ...murid, nama: editNama, nisn: editNisn, kelas: editKelas, jurusan: editJurusan }
-          : murid
-      )
-    );
-    setEditingMurid(null);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/api/murid/${editingMurid.id}`,
+        {
+          nama: editNama,
+          nisn: editNisn,
+          kelas: editKelas,
+          jurusan: editJurusan,
+        }
+      );
+
+      setDataMurid(
+        dataMurid.map((murid) =>
+          murid.id === editingMurid.id ? response.data : murid
+        )
+      );
+      setEditingMurid(null);
+      toast.success("Data murid berhasil diupdate");
+    } catch (error) {
+      console.error("Error update murid:", error);
+      toast.error("Gagal mengupdate data murid");
+    }
   };
 
   // SEARCH filter
@@ -158,37 +199,12 @@ export default function DataMuridPage() {
             <DialogTitle>Tambah Data Murid</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Input
-              placeholder="Nama Murid"
-              value={newNama}
-              onChange={(e) => setNewNama(e.target.value)}
-            />
-            <Input
-              placeholder="NISN Murid"
-              value={newNisn}
-              onChange={(e) => setNewNisn(e.target.value)}
-            />
-            <Input
-              placeholder="Kelas"
-              value={newKelas}
-              onChange={(e) => setNewKelas(e.target.value)}
-            />
-            <Input
-              placeholder="Jurusan"
-              value={newJurusan}
-              onChange={(e) => setNewJurusan(e.target.value)}
-            />
-            <Input
-              placeholder="Email Murid"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <Input
-              placeholder="Password"
-              type="password"
-              value={Password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <Input placeholder="Nama Murid" value={newNama} onChange={(e) => setNewNama(e.target.value)} />
+            <Input placeholder="NISN Murid" value={newNisn} onChange={(e) => setNewNisn(e.target.value)} />
+            <Input placeholder="Kelas" value={newKelas} onChange={(e) => setNewKelas(e.target.value)} />
+            <Input placeholder="Jurusan" value={newJurusan} onChange={(e) => setNewJurusan(e.target.value)} />
+            <Input placeholder="Email Murid" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+            <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <Button onClick={handleAddMurid}>Simpan</Button>
           </div>
         </DialogContent>
@@ -217,34 +233,24 @@ export default function DataMuridPage() {
               <TableCell className="space-x-2">
                 <Button size="sm" variant="secondary" onClick={() => handleOpenEdit(murid)}>Edit</Button>
 
-                {/* AlertDialog untuk Delete */}
                 <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Yakin ingin menghapus {murid.nama}?
-                        </AlertDialogTitle>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => {
-                            handleDelete(murid.id);
-                            toast.success("Data Murid Berhasil Dihapus", {
-                              description: `Data guru ${murid.nama} telah dihapus`,
-                            });
-                          }}
-                        >
-                          Hapus
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">Delete</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Yakin ingin menghapus {murid.nama}?
+                      </AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(murid.id)}>
+                        Hapus
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TableCell>
             </TableRow>
           ))}

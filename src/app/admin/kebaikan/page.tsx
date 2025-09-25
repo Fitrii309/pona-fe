@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -20,34 +21,54 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+type Kebaikan = {
+  id: number;
+  kategori: string;
+  poin: number;
+};
+
 export default function DataKebaikanPage() {
-  const [dataKebaikan, setDataKebaikan] = React.useState([
-    { id: 1, kategori: "Patuh Tata Tertib", poin: 20 },
-    { id: 2, kategori: "Rajin Piket", poin: 10 },
-    { id: 3, kategori: "Rajin Sholat", poin: 20 },
-    { id: 4, kategori: "Disiplin", poin: 15 },
-    { id: 5, kategori: "Rajin menolong teman", poin: 10 },
-  ]);
+  const [newKategori, setNewKategori] = useState("");
+  const [newPoin, setNewPoin] = useState("");
+  const [dataKebaikan, setDataKebaikan] = useState<Kebaikan[]>([]);
 
-  const [newKategori, setNewKategori] = React.useState("");
-  const [newPoin, setNewPoin] = React.useState("");
+  // FETCH DATA dari backend
+  async function fetchKebaikan() {
+    try {
+      const response = await axios.get("http://localhost:3001/kategori-poin");
+      setDataKebaikan(response.data);
+    } catch (error) {
+      console.error("Error fetching kebaikan data:", error);
+      toast.error("Gagal mengambil data kebaikan");
+    }
+  }
 
-  const handleAddKebaikan = () => {
+  useEffect(() => {
+    fetchKebaikan();
+  }, []);
+
+  // ADD DATA ke backend
+  const handleAddKebaikan = async () => {
     if (!newKategori || !newPoin) {
       toast.error("Semua field harus diisi");
       return;
     }
 
-    const newKebaikan = {
-      id: dataKebaikan.length + 1,
-      kategori: newKategori,
-      poin: parseInt(newPoin),
-    };
+    try {
+      const response = await axios.post("http://localhost:3001/kategori-poin", {
+        kategori: newKategori,
+        poin: parseInt(newPoin),
+      });
 
-    setDataKebaikan([...dataKebaikan, newKebaikan]);
-    setNewKategori("");
-    setNewPoin("");
-    toast.success("Data kebaikan berhasil ditambahkan");
+      // update state setelah berhasil tambah
+      setDataKebaikan([...dataKebaikan, response.data]);
+      setNewKategori("");
+      setNewPoin("");
+      toast.success("Data kebaikan berhasil ditambahkan");
+    } catch (error) {
+      console.error("Error add kebaikan:", error);
+      toast.error("Gagal menambahkan data kebaikan");
+    }
   };
 
   return (
@@ -107,9 +128,7 @@ export default function DataKebaikanPage() {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{kebaikan.kategori}</TableCell>
                 <TableCell>
-                  <span
-                    className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold"
-                  >
+                  <span className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold">
                     {kebaikan.poin}
                   </span>
                 </TableCell>

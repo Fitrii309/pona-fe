@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import React from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import api from "@/lib/api"; // import axios instance
 
 import {
   Table,
@@ -39,18 +41,11 @@ type Guru = {
   id: number;
   nama: string;
   email: string;
+  nip?: number;
 };
 
 export default function DataGuruPage() {
-  const [dataGuru, setDataGuru] = useState<Guru[]>([
-    { id: 1, nama: "Jumiati Muchtar", email: "zoemmy@gmail.com" },
-    { id: 2, nama: "Ari Wisnu", email: "arwis@gmail.com" },
-    { id: 3, nama: "Eko Prihatin", email: "ekopri@gmail.com" },
-    { id: 4, nama: "Suhartini", email: "tinisuhar@gmail.com" },
-    { id: 5, nama: "Rizka Abungambi", email: "ngambi@gmail.com" },
-    { id: 6, nama: "Alam Keliling Umar", email: "umaralam@gmail.com" },
-  ]);
-
+  const [dataGuru, setDataGuru] = useState<Guru[]>([]);
   const [newNama, setNewNama] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newNip, setNewNip] = useState("");
@@ -62,24 +57,58 @@ export default function DataGuruPage() {
 
   const [query, setQuery] = useState("");
 
+  // FETCH DATA
+  async function fetchDataGuru() {
+    try {
+      const response = await api.get("/guru");
+      setDataGuru(response.data);
+    } catch (error) {
+      console.error("Error fetching data guru:", error);
+      toast.error("Gagal mengambil data guru");
+    }
+  }
+
+  useEffect(() => {
+    fetchDataGuru();
+  }, []);
+
   // SAVE ADD
-  const handleSaveAdd = () => {
-    if (!newNama || !newEmail || !newNip || !password) return;
-    const newGuru: Guru = {
-      id: Date.now(),
-      nama: newNama,
-      email: newEmail,
-    };
-    setDataGuru([...dataGuru, newGuru]);
-    setNewNama("");
-    setNewEmail("");
-    setNewNip("");
-    setPassword("");
+  const handleSaveAdd = async () => {
+    if (!newNama || !newEmail || !newNip || !password) {
+      toast.error("Semua field harus diisi!");
+      return;
+    }
+
+    try {
+      const response = await api.post("/guru", {
+        nama: newNama,
+        email: newEmail,
+        nip: newNip,
+        password: password,
+      });
+
+      setDataGuru([...dataGuru, response.data]); // tambahkan hasil dari backend
+      setNewNama("");
+      setNewEmail("");
+      setNewNip("");
+      setPassword("");
+      toast.success("Data guru berhasil ditambahkan");
+    } catch (error) {
+      console.error("Error add guru:", error);
+      toast.error("Gagal menambah data guru");
+    }
   };
 
   // DELETE
-  const handleDelete = (id: number) => {
-    setDataGuru(dataGuru.filter((guru) => guru.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/guru/${id}`);
+      setDataGuru(dataGuru.filter((guru) => guru.id !== id));
+      toast.success("Data guru berhasil dihapus");
+    } catch (error) {
+      console.error("Error delete guru:", error);
+      toast.error("Gagal menghapus data guru");
+    }
   };
 
   // OPEN EDIT
@@ -90,16 +119,26 @@ export default function DataGuruPage() {
   };
 
   // SAVE EDIT
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingGuru) return;
-    setDataGuru(
-      dataGuru.map((guru) =>
-        guru.id === editingGuru.id
-          ? { ...guru, nama: editNama, email: editEmail }
-          : guru
-      )
-    );
-    setEditingGuru(null);
+
+    try {
+      const response = await api.put(`/guru/${editingGuru.id}`, {
+        nama: editNama,
+        email: editEmail,
+      });
+
+      setDataGuru(
+        dataGuru.map((guru) =>
+          guru.id === editingGuru.id ? response.data : guru
+        )
+      );
+      setEditingGuru(null);
+      toast.success("Data guru berhasil diupdate");
+    } catch (error) {
+      console.error("Error update guru:", error);
+      toast.error("Gagal mengupdate data guru");
+    }
   };
 
   const filteredGuru = dataGuru.filter(
@@ -212,14 +251,7 @@ export default function DataGuruPage() {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => {
-                            handleDelete(guru.id);
-                            toast.success("Data Guru Berhasil Dihapus", {
-                              description: `Data guru ${guru.nama} telah dihapus`,
-                            });
-                          }}
-                        >
+                        <AlertDialogAction onClick={() => handleDelete(guru.id)}>
                           Hapus
                         </AlertDialogAction>
                       </AlertDialogFooter>

@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 type Student = {
   id: number;
@@ -10,19 +12,26 @@ type Student = {
 };
 
 export default function LeaderboardPage() {
-  const students: Student[] = [
-    { id: 1, name: "Ambayong Bayong", points: 5075, avatar: "/pp.jpeg" },
-    { id: 2, name: "Olivia Rodrigo", points: 4985, avatar: "/pp.jpeg" },
-    { id: 3, name: "Raff", points: 4642, avatar: "/pp.jpeg" },
-    { id: 4, name: "Bernadya", points: 3874, avatar: "/pp.jpeg" },
-    { id: 5, name: "Mihu Mihu", points: 3567, avatar: "/pp.jpeg" },
-    { id: 6, name: "Lorem Ipsum", points: 3478, avatar: "/pp.jpeg" },
-    { id: 7, name: "NIKI", points: 3387, avatar: "/pp.jpeg" },
-    { id: 8, name: "Juicy Luicy", points: 3257, avatar: "/pp.jpeg" },
-    { id: 9, name: "Nadin Amizah", points: 3250, avatar: "/pp.jpeg" },
-    { id: 10, name: "Iyang", points: 3212, avatar: "/pp.jpeg" },
-  ];
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch data dari backend
+  useEffect(() => {
+    async function fetchStudents() {
+      try {
+        const response = await axios.get("http://localhost:3001/leaderboard");
+        setStudents(response.data); 
+      } catch (error) {
+        console.error("Gagal fetch leaderboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStudents();
+  }, []);
+
+  // Urutkan descending berdasarkan points
   const sorted = [...students].sort((a, b) => b.points - a.points);
 
   const getMedal = (rank: number) => {
@@ -31,6 +40,10 @@ export default function LeaderboardPage() {
     if (rank === 3) return "🥉";
     return rank;
   };
+
+  if (loading) {
+    return <p className="text-center mt-5">Loading...</p>;
+  }
 
   return (
     <div className="w-full">
@@ -49,34 +62,36 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Rows */}
-          {sorted.map((student, index) => (
-            <div
-              key={student.id}
-              className="flex items-center justify-between px-2 md:px-6 py-2 md:py-3 border-b hover:bg-gray-50 transition text-sm md:text-base"
-            >
-              <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <span className="text-base md:text-lg w-5 md:w-6 text-center shrink-0">
-                  {getMedal(index + 1)}
-                </span>
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden shrink-0">
-                  <Image
-                    src={student.avatar}
-                    alt={student.name}
-                    width={32}
-                    height={32}
-                    className="object-cover"
-                  />
+          {sorted.length > 0 ? (
+            sorted.map((student, index) => (
+              <div
+                key={student.id}
+                className="flex items-center justify-between px-2 md:px-6 py-2 md:py-3 border-b hover:bg-gray-50 transition text-sm md:text-base"
+              >
+                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                  <span className="text-base md:text-lg w-5 md:w-6 text-center shrink-0">
+                    {getMedal(index + 1)}
+                  </span>
+                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden shrink-0">
+                    <Image
+                      src={student.avatar}
+                      alt={student.name}
+                      width={32}
+                      height={32}
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="font-medium truncate">{student.name}</span>
                 </div>
-                <span className="font-medium truncate">{student.name}</span>
-              </div>
 
-              <div></div>
-
-              <div className="text-right font-semibold text-gray-700">
-                {student.points}
+                <div className="text-right font-semibold text-gray-700">
+                  {student.points}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-center py-4 text-gray-500">Belum ada data</p>
+          )}
         </div>
       </div>
     </div>
