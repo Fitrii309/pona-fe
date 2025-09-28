@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import React from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api"; // import axios instance
+import api from "@/lib/api";
 
 import {
   Table,
@@ -22,130 +21,135 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-type Guru = {
-  id: number;
+
+enum JenisKelamin {
+  LAKI_LAKI = "LAKI_LAKI",
+  PEREMPUAN = "PEREMPUAN",
+}
+
+interface Guru {
+  id_guru: number;
   nama: string;
-  email: string;
-  nip?: number;
-};
+  nip: number;
+  jenis_kelamin: JenisKelamin;
+}
 
-export default function DataGuruPage() {
+export default function GuruPage() {
   const [dataGuru, setDataGuru] = useState<Guru[]>([]);
+  const [search, setSearch] = useState("");
+
+  // Tambah Guru
   const [newNama, setNewNama] = useState("");
-  const [newEmail, setNewEmail] = useState("");
   const [newNip, setNewNip] = useState("");
-  const [password, setPassword] = useState("");
+  const [jenisKelamin, setJenisKelamin] = useState<JenisKelamin | "">("");
 
-  const [editingGuru, setEditingGuru] = useState<Guru | null>(null);
+  // Edit Guru
+  const [editId, setEditId] = useState<number | null>(null);
   const [editNama, setEditNama] = useState("");
-  const [editEmail, setEditEmail] = useState("");
+  const [editNip, setEditNip] = useState("");
+  const [editJenisKelamin, setEditJenisKelamin] = useState<JenisKelamin | "">("");
 
-  const [query, setQuery] = useState("");
-
-  // FETCH DATA
-  async function fetchDataGuru() {
+  // Fetch data guru
+  const fetchGuru = async () => {
     try {
       const response = await api.get("/guru");
       setDataGuru(response.data);
     } catch (error) {
-      console.error("Error fetching data guru:", error);
+      console.error(error);
       toast.error("Gagal mengambil data guru");
     }
-  }
+  };
 
   useEffect(() => {
-    fetchDataGuru();
+    fetchGuru();
   }, []);
 
-  // SAVE ADD
+  // Tambah data guru
   const handleSaveAdd = async () => {
-    if (!newNama || !newEmail || !newNip || !password) {
-      toast.error("Semua field harus diisi!");
+    if (!newNama || !newNip || !jenisKelamin) {
+      toast.error("Lengkapi semua field!");
       return;
     }
 
     try {
-      const response = await api.post("/guru", {
+      const guruResponse = await api.post("/guru", {
         nama: newNama,
-        email: newEmail,
-        nip: newNip,
-        password: password,
+        nip: Number(newNip),
+        jenis_kelamin: jenisKelamin, 
       });
 
-      setDataGuru([...dataGuru, response.data]); // tambahkan hasil dari backend
+      setDataGuru([...dataGuru, guruResponse.data]);
       setNewNama("");
-      setNewEmail("");
       setNewNip("");
-      setPassword("");
-      toast.success("Data guru berhasil ditambahkan");
+      setJenisKelamin("");
+      toast.success("Guru berhasil ditambahkan");
     } catch (error) {
-      console.error("Error add guru:", error);
-      toast.error("Gagal menambah data guru");
+      console.error(error);
+      toast.error("Gagal menambahkan guru");
     }
   };
 
-  // DELETE
-  const handleDelete = async (id: number) => {
-    try {
-      await api.delete(`/guru/${id}`);
-      setDataGuru(dataGuru.filter((guru) => guru.id !== id));
-      toast.success("Data guru berhasil dihapus");
-    } catch (error) {
-      console.error("Error delete guru:", error);
-      toast.error("Gagal menghapus data guru");
-    }
-  };
-
-  // OPEN EDIT
-  const handleOpenEdit = (guru: Guru) => {
-    setEditingGuru(guru);
-    setEditNama(guru.nama);
-    setEditEmail(guru.email);
-  };
-
-  // SAVE EDIT
+  // Edit data guru
   const handleSaveEdit = async () => {
-    if (!editingGuru) return;
+    if (!editNama || !editNip || !editJenisKelamin) {
+      toast.error("Lengkapi semua field!");
+      return;
+    }
 
     try {
-      const response = await api.put(`/guru/${editingGuru.id}`, {
+      const guruResponse = await api.put(`/guru/${editId}`, {
         nama: editNama,
-        email: editEmail,
+        nip: Number(editNip),
+        jenis_kelamin: editJenisKelamin,
       });
 
       setDataGuru(
-        dataGuru.map((guru) =>
-          guru.id === editingGuru.id ? response.data : guru
-        )
+        dataGuru.map((g) => (g.id_guru === editId ? guruResponse.data : g))
       );
-      setEditingGuru(null);
-      toast.success("Data guru berhasil diupdate");
+      setEditId(null);
+      setEditNama("");
+      setEditNip("");
+      setEditJenisKelamin("");
+      toast.success("Guru berhasil diperbarui");
     } catch (error) {
-      console.error("Error update guru:", error);
-      toast.error("Gagal mengupdate data guru");
+      console.error(error);
+      toast.error("Gagal mengedit guru");
     }
   };
 
+  // Hapus data guru
+  const handleDelete = async (id: number) => {
+    if (!confirm("Yakin ingin menghapus guru ini?")) return;
+
+    try {
+      await api.delete(`/guru/${id}`);
+      setDataGuru(dataGuru.filter((g) => g.id_guru !== id));
+      toast.success("Guru berhasil dihapus");
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal menghapus guru");
+    }
+  };
+
+  const [query, setQuery] = useState("");
   const filteredGuru = dataGuru.filter(
     (guru) =>
       guru.nama.toLowerCase().includes(query.toLowerCase()) ||
-      guru.email.toLowerCase().includes(query.toLowerCase())
+      guru.nip.toString().includes(query.toLowerCase()) ||
+      guru.jenis_kelamin.toLowerCase().includes(query.toLowerCase())
   );
+
 
   return (
     <div className="flex flex-col space-y-7">
@@ -160,7 +164,6 @@ export default function DataGuruPage() {
         />
       </div>
 
-      {/* Divider */}
       <div className="border-b border-gray-300"></div>
 
       {/* Judul */}
@@ -169,7 +172,7 @@ export default function DataGuruPage() {
         <h2 className="text-2xl font-medium text-gray-800">List Data Guru</h2>
       </div>
 
-      {/* Dialog Tambah */}
+      {/* Tombol Tambah */}
       <Dialog>
         <div className="flex justify-end">
           <DialogTrigger asChild>
@@ -179,9 +182,10 @@ export default function DataGuruPage() {
           </DialogTrigger>
         </div>
 
+        {/* Dialog Tambah */}
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Tambah Data Guru</DialogTitle>
+            <DialogTitle>Tambah Guru</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-2">
             <Input
@@ -190,112 +194,117 @@ export default function DataGuruPage() {
               onChange={(e) => setNewNama(e.target.value)}
             />
             <Input
-              placeholder="NIP Guru"
+              placeholder="NIP"
+              type="number"
               value={newNip}
               onChange={(e) => setNewNip(e.target.value)}
             />
-            <Input
-              placeholder="Email Guru"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-            <Input
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <Select
+              onValueChange={(val) => setJenisKelamin(val as JenisKelamin)}
+              value={jenisKelamin || undefined}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih Jenis Kelamin" />
+              </SelectTrigger>
+              <SelectContent className="w-full">
+                <SelectItem value={JenisKelamin.LAKI_LAKI}>
+                  Laki-Laki
+                </SelectItem>
+                <SelectItem value={JenisKelamin.PEREMPUAN}>
+                  Perempuan
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <Button onClick={handleSaveAdd}>Simpan</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Table */}
+      {/* Table Guru */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>No.</TableHead>
             <TableHead>Nama</TableHead>
-            <TableHead>Email</TableHead>
+            <TableHead>NIP</TableHead>
+            <TableHead>Jenis Kelamin</TableHead>
             <TableHead>Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredGuru.length > 0 ? (
-            filteredGuru.map((guru, index) => (
-              <TableRow key={guru.id} className="font-medium">
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{guru.nama}</TableCell>
-                <TableCell>{guru.email}</TableCell>
-                <TableCell className="space-x-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleOpenEdit(guru)}
-                  >
-                    Edit
-                  </Button>
-
-                  {/* AlertDialog untuk Delete */}
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm">
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Yakin ingin menghapus {guru.nama}?
-                        </AlertDialogTitle>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(guru.id)}>
-                          Hapus
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center text-gray-500">
-                Data tidak ditemukan
+          {filteredGuru.map((guru) => (
+            <TableRow key={guru.id_guru} className="font-medium">
+              <TableCell>{guru.nama}</TableCell>
+              <TableCell>{guru.nip}</TableCell>
+              <TableCell>
+                {guru.jenis_kelamin === JenisKelamin.LAKI_LAKI
+                  ? "Laki-Laki"
+                  : "Perempuan"}
+              </TableCell>
+              <TableCell className="space-x-2">
+                {/* Edit Dialog */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setEditId(guru.id_guru);
+                        setEditNama(guru.nama);
+                        setEditNip(guru.nip.toString());
+                        setEditJenisKelamin(guru.jenis_kelamin);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Guru</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Input
+                        placeholder="Nama Guru"
+                        value={editNama}
+                        onChange={(e) => setEditNama(e.target.value)}
+                      />
+                      <Input
+                        placeholder="NIP"
+                        type="number"
+                        value={editNip}
+                        onChange={(e) => setEditNip(e.target.value)}
+                      />
+                      <Select
+                        onValueChange={(val) =>
+                          setEditJenisKelamin(val as JenisKelamin)
+                        }
+                        value={editJenisKelamin || undefined}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Pilih Jenis Kelamin" />
+                        </SelectTrigger>
+                        <SelectContent className="w-full">
+                          <SelectItem value={JenisKelamin.LAKI_LAKI}>
+                            Laki-Laki
+                          </SelectItem>
+                          <SelectItem value={JenisKelamin.PEREMPUAN}>
+                            Perempuan
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button onClick={handleSaveEdit}>Simpan</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDelete(guru.id_guru)}
+                >
+                  Hapus
+                </Button>
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
-
-      {/* Dialog Edit */}
-      <Dialog open={!!editingGuru} onOpenChange={() => setEditingGuru(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Data Guru</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <Input
-              placeholder="Nama Guru"
-              value={editNama}
-              onChange={(e) => setEditNama(e.target.value)}
-            />
-            <Input
-              placeholder="Email Guru"
-              value={editEmail}
-              onChange={(e) => setEditEmail(e.target.value)}
-            />
-          </div>
-          <DialogFooter className="mt-4">
-            <Button variant="secondary" onClick={() => setEditingGuru(null)}>
-              Batal
-            </Button>
-            <Button onClick={handleSaveEdit}>Simpan</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

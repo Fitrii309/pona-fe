@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import { toast } from "sonner";
+import api from "@/lib/api"; 
+
 import {
   Dialog,
   DialogTrigger,
@@ -35,7 +36,7 @@ export default function DataKebaikanPage() {
   // FETCH DATA dari backend
   async function fetchKebaikan() {
     try {
-      const response = await axios.get("http://localhost:3001/kategori-poin");
+      const response = await api.get("/kategori-poin"); 
       setDataKebaikan(response.data);
     } catch (error) {
       console.error("Error fetching kebaikan data:", error);
@@ -55,16 +56,15 @@ export default function DataKebaikanPage() {
     }
 
     try {
-      const response = await axios.post("http://localhost:3001/kategori-poin", {
+      await api.post("/kategori-poin", {
         kategori: newKategori,
-        poin: parseInt(newPoin),
+        poin: parseInt(newPoin, 10),
       });
 
-      // update state setelah berhasil tambah
-      setDataKebaikan([...dataKebaikan, response.data]);
       setNewKategori("");
       setNewPoin("");
       toast.success("Data kebaikan berhasil ditambahkan");
+      fetchKebaikan();
     } catch (error) {
       console.error("Error add kebaikan:", error);
       toast.error("Gagal menambahkan data kebaikan");

@@ -25,8 +25,8 @@ export default function ProfilePage() {
             <Image
               src={student.avatar}
               alt={student.name}
-              width={112}
-              height={112}
+              width= {112}
+              height= {112}
               className="object-cover"
             />
           </div>

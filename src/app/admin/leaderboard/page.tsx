@@ -2,16 +2,19 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api"; 
 
 type Student = {
   id: number;
+  no: string;
   name: string;
   points: number;
-  avatar: string;
+  kelas: string;
+  jurusan: string;
 };
 
 export default function LeaderboardPage() {
+
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +22,7 @@ export default function LeaderboardPage() {
   useEffect(() => {
     async function fetchStudents() {
       try {
-        const response = await axios.get("http://localhost:3001/leaderboard");
+        const response = await api.get("/leaderboard?limit=10");
         setStudents(response.data); 
       } catch (error) {
         console.error("Gagal fetch leaderboard:", error);
@@ -55,43 +58,44 @@ export default function LeaderboardPage() {
 
       <div className="flex justify-center p-4 mb-8">
         <div className="bg-white rounded-xl shadow-sm w-full h-auto md:min-w-[500px] lg:min-w-[600px]">
-          {/* Header row */}
-          <div className="flex justify-between px-2 md:px-6 py-2 md:py-3 text-gray-500 text-xs md:text-sm font-semibold border-b">
-            <span>Nama</span>
-            <span className="col-span-2 text-right">Poin</span>
+
+      {/* Header row */}
+      <div className="grid grid-cols-5 px-2 md:px-6 py-2 md:py-3 text-gray-500 text-xs md:text-sm font-semibold border-b">
+        <span>No.</span>
+        <span>Nama</span>
+        <span className="text-center">Kelas</span>
+        <span className="text-center">Jurusan</span>
+        <span className="text-right">Poin</span>
+      </div>
+
+      {/* Rows */}
+      {sorted.length > 0 ? (
+        sorted.map((student, index) => (
+          <div
+            key={student.id}
+            className="grid grid-cols-5 items-center px-2 md:px-6 py-2 md:py-3 border-b hover:bg-gray-50 transition text-sm md:text-base"
+          >
+            {/* Kolom No → langsung medali */}
+            <div>{getMedal(index + 1)}</div>
+
+            {/* Kolom Nama */}
+            <div className="truncate">{student.name}</div>
+
+            {/* Kolom Kelas */}
+            <div className="text-center">{student.kelas}</div>
+
+            {/* Kolom Jurusan */}
+            <div className="text-center">{student.jurusan}</div>
+
+            {/* Kolom Poin */}
+            <div className="text-right font-semibold text-gray-700">
+              {student.points}
+            </div>
           </div>
-
-          {/* Rows */}
-          {sorted.length > 0 ? (
-            sorted.map((student, index) => (
-              <div
-                key={student.id}
-                className="flex items-center justify-between px-2 md:px-6 py-2 md:py-3 border-b hover:bg-gray-50 transition text-sm md:text-base"
-              >
-                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                  <span className="text-base md:text-lg w-5 md:w-6 text-center shrink-0">
-                    {getMedal(index + 1)}
-                  </span>
-                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-full overflow-hidden shrink-0">
-                    <Image
-                      src={student.avatar}
-                      alt={student.name}
-                      width={32}
-                      height={32}
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="font-medium truncate">{student.name}</span>
-                </div>
-
-                <div className="text-right font-semibold text-gray-700">
-                  {student.points}
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center py-4 text-gray-500">Belum ada data</p>
-          )}
+        ))
+      ) : (
+        <p className="text-center py-4 text-gray-500">Belum ada data</p>
+    )}
         </div>
       </div>
     </div>
