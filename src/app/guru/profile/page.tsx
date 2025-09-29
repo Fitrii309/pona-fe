@@ -1,36 +1,38 @@
-"use client";
+"use client"; // wajib jika pakai useState/useEffect
 
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type GuruBio = {
   id_guru: number;
   nama: string;
   nip: number;
-  jenis_kelamin?: string;
   email?: string;
-  avatar?: string; // optional
+  avatar?: string;
 };
 
-export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
+export default function GuruProfilePage() { // ✅ Harus fungsi React
   const [guru, setGuru] = useState<GuruBio | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchGuru = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/bio/guru/${id_guru}`, {
+        const res = await fetch("http://localhost:3001/bio/GURU", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        if (!res.ok) throw new Error("Gagal fetch data guru");
         const data = await res.json();
         setGuru(data);
       } catch (err) {
-        console.error("Gagal fetch data guru:", err);
+        console.error(err);
+        toast.error("Gagal mengambil data guru");
       }
     };
     fetchGuru();
-  }, [id_guru]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!guru) return;
@@ -39,28 +41,23 @@ export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
 
   const handleSave = async () => {
     if (!guru) return;
-
     try {
-      const res = await fetch(`http://localhost:3001/bio/guru/${id_guru}`, {
+      const res = await fetch("http://localhost:3001/bio/GURU", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({
-          nama: guru.nama,
-          nip: guru.nip,
-        }),
+        body: JSON.stringify({ nama: guru.nama, nip: guru.nip }),
       });
-
       if (!res.ok) throw new Error("Gagal update data guru");
       const updated = await res.json();
       setGuru(updated);
       setIsEditing(false);
-      alert("Data guru berhasil diperbarui ✅");
+      toast.success("Data guru berhasil diperbarui ✅");
     } catch (err) {
       console.error(err);
-      alert("Error saat update data guru");
+      toast.error("Gagal mengupdate data guru");
     }
   };
 
@@ -74,22 +71,18 @@ export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-8 max-w-md">
-        {/* Avatar */}
         <div className="flex justify-center mb-6">
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
-            {guru && (
-              <Image
-                src={guru.avatar || "/pp.jpeg"}
-                alt={guru.nama ?? "Avatar guru"} // fallback alt
-                width={112}
-                height={112}
-                className="object-cover"
-              />
-            )}
+            <Image
+              src={guru.avatar || "/pp.jpeg"}
+              alt={guru.nama || "Avatar guru"}
+              width={112}
+              height={112}
+              className="object-cover"
+            />
           </div>
         </div>
 
-        {/* Nama */}
         <div className="mb-4">
           <label className="block text-gray-500 text-sm mb-1">Nama</label>
           <input
@@ -98,12 +91,12 @@ export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
             value={guru.nama}
             onChange={handleChange}
             readOnly={!isEditing}
-            className={`w-full px-3 py-2 rounded-md border font-semibold ${isEditing ? "text-black border-blue-400" : "text-gray-800"
-              }`}
+            className={`w-full px-3 py-2 rounded-md border font-semibold ${
+              isEditing ? "text-black border-blue-400" : "text-gray-800"
+            }`}
           />
         </div>
 
-        {/* NIP */}
         <div className="mb-4">
           <label className="block text-gray-500 text-sm mb-1">NIP</label>
           <input
@@ -112,12 +105,12 @@ export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
             value={guru.nip}
             onChange={handleChange}
             readOnly={!isEditing}
-            className={`w-full px-3 py-2 rounded-md border font-semibold ${isEditing ? "text-black border-blue-400" : "text-gray-800"
-              }`}
+            className={`w-full px-3 py-2 rounded-md border font-semibold ${
+              isEditing ? "text-black border-blue-400" : "text-gray-800"
+            }`}
           />
         </div>
 
-        {/* Email */}
         <div className="mb-4">
           <label className="block text-gray-500 text-sm mb-1">Email</label>
           <input
@@ -128,27 +121,14 @@ export default function GuruProfilePage({ id_guru }: { id_guru: number }) {
           />
         </div>
 
-        {/* Buttons */}
         <div className="flex justify-end gap-2">
           {isEditing ? (
             <>
-              <Button variant="secondary" onClick={() => setIsEditing(false)}>
-                Batal
-              </Button>
-              <Button
-                className="bg-blue-600 text-white hover:bg-blue-700"
-                onClick={handleSave}
-              >
-                Simpan
-              </Button>
+              <Button variant="secondary" onClick={() => setIsEditing(false)}>Batal</Button>
+              <Button className="bg-blue-600 text-white hover:bg-blue-700" onClick={handleSave}>Simpan</Button>
             </>
           ) : (
-            <Button
-              className="bg-blue-600 text-white hover:bg-blue-700"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit
-            </Button>
+            <Button className="bg-blue-600 text-white hover:bg-blue-700" onClick={() => setIsEditing(true)}>Edit</Button>
           )}
         </div>
       </div>

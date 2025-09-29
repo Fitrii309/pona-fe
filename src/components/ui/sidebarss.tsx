@@ -67,7 +67,7 @@ export default function SidebarMenu() {
           Profile
         </Link>
         <button
-          onClick={handleLogout}
+          onClick={() => setOpenLogout(true)}
           className="flex items-center gap-2 px-3 py-2 hover:text-black hover:bg-orange-200 rounded-lg w-full"
         >
           <LogOut className="w-4 h-4" />
