@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,33 +21,65 @@ import {
 } from "@/components/ui/table";
 
 export default function DataKebaikanPage() {
-  const [dataKebaikan, setDataKebaikan] = React.useState([
-    { id: 1, kategori: "Patuh Tata Tertib", poin: 20 },
-    { id: 2, kategori: "Rajin Piket", poin: 10 },
-    { id: 3, kategori: "Rajin Sholat", poin: 20 },
-    { id: 4, kategori: "Disiplin", poin: 15 },
-    { id: 5, kategori: "Rajin menolong teman", poin: 10 },
-  ]);
+  const [dataKebaikan, setDataKebaikan] = useState<any[]>([]);
+  const [newKategori, setNewKategori] = useState("");
+  const [newPoin, setNewPoin] = useState("");
 
-  const [newKategori, setNewKategori] = React.useState("");
-  const [newPoin, setNewPoin] = React.useState("");
+  // ambil data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3001/kategori-poin", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Gagal ambil data");
 
-  const handleAddKebaikan = () => {
+        const data = await res.json();
+        setDataKebaikan(data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Gagal ambil data");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // tambah data
+  const handleAddKebaikan = async () => {
     if (!newKategori || !newPoin) {
       toast.error("Semua field harus diisi");
       return;
     }
 
-    const newKebaikan = {
-      id: dataKebaikan.length + 1,
-      kategori: newKategori,
-      poin: parseInt(newPoin),
-    };
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3001/kategori-poin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nama_kategori: newKategori,
+          nilai_default: parseInt(newPoin),
+        }),
+      });
 
-    setDataKebaikan([...dataKebaikan, newKebaikan]);
-    setNewKategori("");
-    setNewPoin("");
-    toast.success("Data kebaikan berhasil ditambahkan");
+      if (!res.ok) throw new Error("Gagal tambah data");
+      const data = await res.json();
+
+      setDataKebaikan([...dataKebaikan, data]);
+      setNewKategori("");
+      setNewPoin("");
+      toast.success("Data kebaikan berhasil ditambahkan");
+    } catch (err) {
+      console.error(err);
+      toast.error("Gagal simpan data");
+    }
   };
 
   return (
@@ -103,14 +135,12 @@ export default function DataKebaikanPage() {
         <TableBody>
           {dataKebaikan.length > 0 ? (
             dataKebaikan.map((kebaikan, index) => (
-              <TableRow key={kebaikan.id} className="font-medium">
+              <TableRow key={kebaikan.id_kategori} className="font-medium">
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{kebaikan.kategori}</TableCell>
+                <TableCell>{kebaikan.nama_kategori}</TableCell>
                 <TableCell>
-                  <span
-                    className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold"
-                  >
-                    {kebaikan.poin}
+                  <span className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold">
+                    {kebaikan.nilai_default}
                   </span>
                 </TableCell>
               </TableRow>
