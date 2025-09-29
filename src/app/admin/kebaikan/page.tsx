@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import api from "@/lib/api"; 
-
 import {
   Dialog,
   DialogTrigger,
@@ -22,33 +20,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Kebaikan = {
-  id: number;
-  kategori: string;
-  poin: number;
-};
-
 export default function DataKebaikanPage() {
+  const [dataKebaikan, setDataKebaikan] = useState<any[]>([]);
   const [newKategori, setNewKategori] = useState("");
   const [newPoin, setNewPoin] = useState("");
-  const [dataKebaikan, setDataKebaikan] = useState<Kebaikan[]>([]);
 
-  // FETCH DATA dari backend
-  async function fetchKebaikan() {
-    try {
-      const response = await api.get("/kategori-poin"); 
-      setDataKebaikan(response.data);
-    } catch (error) {
-      console.error("Error fetching kebaikan data:", error);
-      toast.error("Gagal mengambil data kebaikan");
-    }
-  }
-
+  // ambil data
   useEffect(() => {
-    fetchKebaikan();
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3001/kategori-poin", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Gagal ambil data");
+
+        const data = await res.json();
+        setDataKebaikan(data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Gagal ambil data");
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // ADD DATA ke backend
+  // tambah data
   const handleAddKebaikan = async () => {
     if (!newKategori || !newPoin) {
       toast.error("Semua field harus diisi");
@@ -56,18 +56,29 @@ export default function DataKebaikanPage() {
     }
 
     try {
-      await api.post("/kategori-poin", {
-        kategori: newKategori,
-        poin: parseInt(newPoin, 10),
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3001/kategori-poin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nama_kategori: newKategori,
+          nilai_default: parseInt(newPoin),
+        }),
       });
 
+      if (!res.ok) throw new Error("Gagal tambah data");
+      const data = await res.json();
+
+      setDataKebaikan([...dataKebaikan, data]);
       setNewKategori("");
       setNewPoin("");
       toast.success("Data kebaikan berhasil ditambahkan");
-      fetchKebaikan();
-    } catch (error) {
-      console.error("Error add kebaikan:", error);
-      toast.error("Gagal menambahkan data kebaikan");
+    } catch (err) {
+      console.error(err);
+      toast.error("Gagal simpan data");
     }
   };
 
@@ -124,12 +135,12 @@ export default function DataKebaikanPage() {
         <TableBody>
           {dataKebaikan.length > 0 ? (
             dataKebaikan.map((kebaikan, index) => (
-              <TableRow key={kebaikan.id} className="font-medium">
+              <TableRow key={kebaikan.id_kategori} className="font-medium">
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{kebaikan.kategori}</TableCell>
+                <TableCell>{kebaikan.nama_kategori}</TableCell>
                 <TableCell>
                   <span className="px-5 py-1 rounded-lg bg-yellow-400 text-[16px] font-semibold">
-                    {kebaikan.poin}
+                    {kebaikan.nilai_default}
                   </span>
                 </TableCell>
               </TableRow>

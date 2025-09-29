@@ -1,12 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import { User, ClipboardList, LogOut, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function SidebarMenu() {
   const router = useRouter();
+  const [openLogout, setOpenLogout] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -61,6 +73,28 @@ export default function SidebarMenu() {
           <LogOut className="w-4 h-4" />
           Logout
         </button>
+
+        <AlertDialog open={openLogout} onOpenChange={setOpenLogout}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Logout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin keluar dari akun ini?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpenLogout(false)}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Ya, Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       </div>
     </div>
   );

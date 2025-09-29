@@ -108,7 +108,7 @@ export default function GuruPage() {
     }
 
     try {
-      const guruResponse = await api.put(`/guru/${editId}`, {
+      const guruResponse = await api.patch(`/guru/${editId}`, {
         nama: editNama,
         nip: Number(editNip),
         jenis_kelamin: editJenisKelamin,
