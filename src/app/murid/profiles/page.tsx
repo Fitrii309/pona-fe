@@ -10,6 +10,7 @@ type Siswa = {
   kelas: string;
   jurusan: string | null;
   total_poin: number;
+  avatar: string;
 };
 
 export default function ProfilePage() {
@@ -57,8 +58,8 @@ export default function ProfilePage() {
         <div className="flex justify-center mb-6">
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
             <Image
-              src={student.avatar}
-              alt={student.name}
+              src={student.avatar || "/pp.jpeg"}
+              alt={student.nama || "Profile"}
               width={112}
               height={112}
               className="object-cover"
