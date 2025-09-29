@@ -1,15 +1,49 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
+type Siswa = {
+  id_siswa: number;
+  nama: string;
+  nisn: number;
+  kelas: string;
+  jurusan: string | null;
+  total_poin: number;
+};
+
 export default function ProfilePage() {
-  const student = {
-    name: "John Doe",
-    nisn: "0081826624",
-    jurusan: "Rekayasa Perangkat Lunak",
-    kelas: 12,
-    avatar: "/pp.jpeg",
-  };
+  const [student, setStudent] = useState<Siswa | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("http://localhost:3001/bio/SISWA", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // kalau pakai JWT
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+
+        const data: Siswa = await res.json();
+        setStudent(data);
+      } catch (err: unknown) {
+  const errorMessage =
+    err instanceof Error ? err.message : "Unexpected error";
+  setError(errorMessage);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (error) return <p className="text-red-500">Error: {error}</p>;
+  if (!student) return <p>Loading...</p>;
 
   return (
     <div>
@@ -25,60 +59,58 @@ export default function ProfilePage() {
             <Image
               src={student.avatar}
               alt={student.name}
-              width= {112}
-              height= {112}
+              width={112}
+              height={112}
               className="object-cover"
             />
           </div>
         </div>
 
-          {/* Name */}
-          <div className="mb-4">
-            <label className="block text-gray-500 text-sm mb-1">Nama</label>
+        {/* Nama */}
+        <div className="mb-4">
+          <label className="block text-gray-500 text-sm mb-1">Nama</label>
+          <input
+            type="text"
+            value={student.nama}
+            readOnly
+            className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
+          />
+        </div>
+
+        {/* NISN */}
+        <div className="mb-4">
+          <label className="block text-gray-500 text-sm mb-1">NISN</label>
+          <input
+            type="text"
+            value={student.nisn}
+            readOnly
+            className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
+          />
+        </div>
+
+        {/* Kelas + Jurusan */}
+        <div className="flex flex-col sm:flex-row sm:items-end gap-2">
+          <div className="sm:w-20">
+            <label className="block text-gray-500 text-sm mb-1">KELAS</label>
             <input
               type="text"
-              value={student.name}
+              value={student.kelas}
               readOnly
               className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
             />
           </div>
 
-          {/* NISN */}
-          <div className="mb-4">
-            <label className="block text-gray-500 text-sm mb-1">NISN</label>
+          <div className="flex-1">
+            <label className="block text-gray-500 text-sm mb-1">JURUSAN</label>
             <input
               type="text"
-              value={student.nisn}
+              value={student.jurusan ?? "-"}
               readOnly
               className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
             />
-          </div>
-
-          {/* Kelas + Jurusan in one row */}
-          <div className="flex flex-col sm:flex-row sm:items-end gap-2">
-            {/* Kelas */}
-            <div className="sm:w-20">
-              <label className="block text-gray-500 text-sm mb-1">KELAS</label>
-              <input
-                type="text"
-                value={student.kelas}
-                readOnly
-                className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
-              />
-            </div>
-
-            {/* Jurusan */}
-            <div className="flex-1">
-              <label className="block text-gray-500 text-sm mb-1">JURUSAN</label>
-              <input
-                type="text"
-                value={student.jurusan}
-                readOnly
-                className="w-full px-3 py-2 rounded-md border text-gray-800 font-semibold"
-              />
-            </div>
           </div>
         </div>
       </div>
+    </div>
   );
 }

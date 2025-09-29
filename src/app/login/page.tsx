@@ -43,7 +43,7 @@ export default function Login() {
       } else {
         route.push("/murid");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login gagal:", error);
       setErrorMessage("Login gagal, cek email atau password.");
       setOpen(true);
